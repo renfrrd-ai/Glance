@@ -1,0 +1,249 @@
+/*
+ * Recording: the pill that follows a recording around the app, and the live
+ * panel on the Recordings screen.
+ *
+ * The pill is deliberately loud. A recording that is running and forgotten is
+ * worse than one that never started, so it is pinned, it has a pulsing dot,
+ * and Stop is always one click away.
+ */
+
+.rc-pill {
+  position: fixed;
+  z-index: 70;
+  bottom: 18px;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 28px);
+  padding: 8px 10px 8px 14px;
+  border-radius: 999px;
+  background: #1e2b40;
+  color: #f6f0e2;
+  font-family: var(--font-saans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 13px;
+  box-shadow: 0 10px 30px #1e2b4040;
+}
+
+.rc-pill-dot,
+.rc-live-dot {
+  width: 9px;
+  height: 9px;
+  flex: none;
+  border-radius: 50%;
+  background: #e4492a;
+  animation: rc-beat 1.8s ease-in-out infinite;
+}
+
+@keyframes rc-beat {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rc-pill-dot,
+  .rc-live-dot {
+    animation: none;
+  }
+}
+
+.rc-pill-what {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.rc-pill-link {
+  color: #b6dfe6;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.rc-pill-link:hover {
+  text-decoration: underline;
+}
+
+.rc-pill-stop {
+  flex: none;
+  height: 28px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: #e4492a;
+  color: #fff;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.rc-pill-stop:hover {
+  background: #ee5b3c;
+}
+
+/* ---- the live panel ---------------------------------------------------- */
+
+.rc-live {
+  max-width: 880px;
+  margin: 0 auto 18px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 1px 2px #1e2b4014, 0 6px 18px #1e2b400f;
+}
+
+.rc-live[data-stopping] {
+  opacity: 0.72;
+}
+
+.rc-live-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.rc-live-time {
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.rc-live-streams {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  color: #636b7f;
+}
+
+.rc-live-note {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #636b7f;
+}
+
+/* The level, as bars. Lit from the left, so a glance says "it's hearing me". */
+.rc-meter {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 22px;
+}
+
+.rc-meter i {
+  width: 3px;
+  height: 100%;
+  border-radius: 2px;
+  background: #1e2b4017;
+  transition: background 0.08s linear;
+}
+
+.rc-meter i[data-on] {
+  background: #29a383;
+}
+
+/* The last few bars are the ones you do not want lit. */
+.rc-meter i:nth-last-child(-n + 3)[data-on] {
+  background: #e4492a;
+}
+
+/* ---- starting one ------------------------------------------------------ */
+
+.rc-start {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rc-kind {
+  flex: none;
+}
+
+.rc-title {
+  flex: 1;
+  min-width: 200px;
+}
+
+.rc-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #636b7f;
+}
+
+.rc-dismiss {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: #29a383;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---- the transcript ---------------------------------------------------- */
+
+.rc-line {
+  display: grid;
+  grid-template-columns: 52px 76px minmax(0, 1fr);
+  gap: 12px;
+  align-items: baseline;
+  padding: 9px 16px;
+  border-bottom: 1px solid #1e2b4014;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.rc-line:last-child {
+  border-bottom: 0;
+}
+
+.rc-line-at {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: #636b7f;
+}
+
+.rc-line-who {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e2b40;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rc-line-text {
+  color: #3c4149;
+  text-wrap: pretty;
+}
+
+.rc-notes {
+  padding: 18px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #3c4149;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 700px) {
+  .rc-line {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .rc-line-who {
+    grid-column: 2;
+    margin-bottom: -6px;
+  }
+
+  .rc-line-text {
+    grid-column: 2;
+  }
+}

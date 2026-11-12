@@ -1,5 +1,15 @@
-import { Placeholder } from "@/components/app/placeholder";
+import { recordings, summarise } from "@/lib/server/recordings";
+import { RecordingsPage } from "@/components/recorder/recordings-page";
 
-export default function Page() {
-  return <Placeholder title={'Recordings'} lede={'A class chalk listened to, written up.'} />;
+import "@/styles/paper.css";
+
+export const dynamic = "force-dynamic";
+export const metadata = { title: "Recordings" };
+
+export default function Recordings() {
+  const list = [...recordings.values()]
+    .sort((a, b) => Date.parse(b.startedAt) - Date.parse(a.startedAt))
+    .map(summarise);
+
+  return <RecordingsPage initial={list} />;
 }

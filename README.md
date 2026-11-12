@@ -29,6 +29,7 @@ export ANTHROPIC_API_KEY=sk-ant-...
 | [components/control/panes/](components/control/panes/) | The ten settings panes |
 | [components/control/primitives.tsx](components/control/primitives.tsx) | Section / Card / Row / Field / Switch / Seg / Tag / Btn |
 | [components/board/](components/board/) | The board: surface, camera, connectors, cursor, walkthrough, pen |
+| [components/recorder/](components/recorder/) | Recording a class: chunking, pause detection, upload, transcript |
 | [lib/board/](lib/board/) | The board's event model, camera maths, stroke outlining, edge routing |
 | [lib/server/write-board.ts](lib/server/write-board.ts) | Asking Claude for a board; [written.ts](lib/board/written.ts) turns the answer into events |
 | [components/art/](components/art/) | The hand-drawn icon system: 50 doodles, tiles, hero arcs, the logo, the face |
@@ -97,6 +98,31 @@ than prose to parse. Notes on the call:
 - The **profile travels with the ask**, because it lives on the client (the Mac app's store,
   or this browser). It only steers how the board is written, so a missing one costs nothing.
 
+### Recording a class
+
+The hard part is not capturing audio — it is capturing an hour of a lecture
+hall on someone's laptop without filling a disk, flattening a battery, or losing
+the last ten minutes when a tab is closed. [components/recorder/recorder.tsx](components/recorder/recorder.tsx)
+holds nothing:
+
+- **Each chunk is uploaded and transcribed the moment it closes.** The audio is
+  never kept, only words — which is both the privacy promise and why an hour of
+  lecture costs almost nothing to store.
+- **A chunk ends at a pause, not on a timer.** Each source's level is watched
+  against the quietest it has been, and the chunk closes when the room goes back
+  down to its own noise floor — or at ~15s if it never does. A lecture hall is
+  never silent, so "quiet" has to mean relative to that room, and cutting
+  mid-word costs a word.
+- **Silence is never uploaded.** A chunk that never rose above the floor is
+  dropped, and the count of skipped chunks is shown rather than hidden.
+- **Two sources at once** — the microphone, and a shared tab for a call — each
+  labelled so the transcript knows who was talking.
+- A **wake lock** that re-acquires on `visibilitychange`, a `beforeunload` guard,
+  and a `keepalive` PATCH on unmount, so a closed tab still ends the recording.
+
+On the Mac the app records instead (`startMeeting`), because it can capture
+system audio properly; the provider follows its state rather than competing.
+
 ### Settings storage
 
 A setting lives in `localStorage` on the web and in the Mac app's own store when there is
@@ -133,9 +159,13 @@ Standing in, and marked as such where it shows:
 - **Writing a board without a key.** With `ANTHROPIC_API_KEY` set, Home → `/api/boards` →
   Claude → a real board. Without one, the route hands back [a stand-in](lib/server/sample-board.ts)
   and the board says so on itself, rather than passing it off.
-- **The other framed areas** (`/recordings`, `/learn/pages`, `/learn/materials`, `/teach`,
-  `/agents`) are still placeholder pages. They have to answer with something, or the rail
-  frames a broken page instead of an obvious gap.
+- **Transcription.** The recorder is real — it chunks, detects pauses, skips silence and
+  uploads — but `/api/meetings/[id]/audio` notes each chunk instead of writing it down, so
+  the transcript fills with placeholders. That endpoint is the only thing between this and
+  a working class recorder.
+- **The other framed areas** (`/learn/pages`, `/learn/materials`, `/teach`, `/agents`) are
+  still placeholder pages. They have to answer with something, or the rail frames a broken
+  page instead of an obvious gap.
 - **Assets referenced but not in the capture** — `/howto/index.json` and its films,
   `/voices/*.mp3`. Both degrade honestly: the gallery says the videos are on their way, and
   a personality sample is spoken fresh when its recording is missing.

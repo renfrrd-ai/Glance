@@ -2,7 +2,12 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { Caveat, Geist_Mono, Instrument_Sans } from "next/font/google";
 
+import { CursorLook } from "@/components/app/cursor-look";
+import { FrameNav } from "@/components/app/frame-nav";
+import { RecorderRoot } from "@/components/recorder/recorder-root";
+
 import "./globals.css";
+import "@/styles/recorder.css";
 
 const saans = localFont({
   variable: "--font-saans",
@@ -117,7 +122,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} />
       </head>
       <body className={`${instrumentSans.variable} ${geistMono.variable} flex min-h-full flex-col`}>
-        {children}
+        {/* The cursor's look, this page's place in the rail, and the recorder
+            all outlive any one page, so they sit at the root. */}
+        <CursorLook />
+        <FrameNav />
+        <RecorderRoot>{children}</RecorderRoot>
       </body>
     </html>
   );
