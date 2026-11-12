@@ -42,16 +42,17 @@ export const summarise = (board: StoredBoard) => ({
   createdAt: board.createdAt,
 });
 
-export function newBoard(topic: string, origin: StoredBoard["origin"] = "whiteboard") {
+export function keepBoard(events: BoardEvent[], origin: StoredBoard["origin"] = "whiteboard") {
   const id = `b${Date.now().toString(36)}`;
-  const board: StoredBoard = {
-    id,
-    origin,
-    createdAt: new Date().toISOString(),
-    /* The real chalk writes these as it thinks; here the sample stands in, so
-     * the rest of the board — layout, routing, the walkthrough — is exercised. */
-    events: sampleBoard(topic),
-  };
+  const board: StoredBoard = { id, origin, createdAt: new Date().toISOString(), events };
   boards.set(id, board);
   return board;
 }
+
+/**
+ * A board with nothing behind it — used when chalk cannot be reached, so the
+ * rest of the board (layout, routing, the walkthrough) is still exercised.
+ * It says what it is: a board about the topic, not one chalk thought about.
+ */
+export const standInBoard = (topic: string, origin: StoredBoard["origin"] = "whiteboard") =>
+  keepBoard(sampleBoard(topic), origin);

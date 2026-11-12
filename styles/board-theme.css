@@ -244,3 +244,40 @@
   height: auto;
   padding: 14px 16px;
 }
+
+/* A line about the board itself — that chalk did not write this one, say. */
+.ck-note-bar {
+  position: fixed;
+  z-index: 60;
+  top: 16px;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: min(560px, calc(100vw - 32px));
+  padding: 9px 10px 9px 14px;
+  border-radius: 12px;
+  background: #1e2b40;
+  color: #f6f0e2;
+  font-family: var(--font-saans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  box-shadow: 0 10px 30px #1e2b4033;
+}
+
+.ck-note-bar button {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 7px;
+  background: #ffffff1a;
+  color: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.ck-note-bar button:hover {
+  background: #ffffff2e;
+}

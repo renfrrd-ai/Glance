@@ -10,6 +10,9 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { DEFAULT_PROFILE, type Profile } from "@/lib/profile";
+import { usePref } from "@/lib/prefs";
+
 import { Paper } from "./paper";
 
 const STARTERS = [
@@ -22,6 +25,7 @@ const STARTERS = [
 export function NewBoard() {
   const [topic, setTopic] = useState("");
   const [asking, setAsking] = useState(false);
+  const [profile] = usePref<Profile>("profile", DEFAULT_PROFILE);
   const [problem, setProblem] = useState<string | null>(null);
   const box = useRef<HTMLTextAreaElement>(null);
 
@@ -49,7 +53,7 @@ export function NewBoard() {
     const result = await fetch("/api/boards", {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-chalk-app": "1" },
-      body: JSON.stringify({ topic: asked }),
+      body: JSON.stringify({ topic: asked, profile }),
     })
       .then(async (response) => ({ ok: response.ok, data: await response.json().catch(() => ({})) }))
       .catch(() => ({ ok: false, data: { message: "chalk couldn't be reached." } }));
@@ -59,6 +63,14 @@ export function NewBoard() {
       setProblem(String(result.data?.message ?? "That didn't work."));
       return;
     }
+
+    /* A board chalk didn't write says so, rather than passing itself off. */
+    if (result.data.drawn === false && result.data.message)
+      try {
+        sessionStorage.setItem("chalk.board-note", String(result.data.message));
+      } catch {
+        /* private window */
+      }
 
     window.location.href = `/board/${result.data.board.id}`;
   };

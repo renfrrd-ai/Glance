@@ -12,6 +12,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { SectionIcon } from "@/components/art/section-art";
+import { DEFAULT_PROFILE, type Profile } from "@/lib/profile";
+import { usePref } from "@/lib/prefs";
 import { when } from "@/lib/when";
 
 import { Paper, PaperCard, PaperEmpty, PaperRow } from "./paper";
@@ -36,6 +38,7 @@ export function Home({ boards, courses }: { boards: BoardSummary[]; courses: Cou
   const router = useRouter();
   const [topic, setTopic] = useState("");
   const [asking, setAsking] = useState(false);
+  const [profile] = usePref<Profile>("profile", DEFAULT_PROFILE);
   const [problem, setProblem] = useState<string | null>(null);
   const box = useRef<HTMLTextAreaElement>(null);
 
@@ -62,7 +65,7 @@ export function Home({ boards, courses }: { boards: BoardSummary[]; courses: Cou
     const result = await fetch("/api/boards", {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-chalk-app": "1" },
-      body: JSON.stringify({ topic: asked }),
+      body: JSON.stringify({ topic: asked, profile }),
     })
       .then(async (response) => ({ ok: response.ok, data: await response.json().catch(() => ({})) }))
       .catch(() => ({ ok: false, data: { message: "chalk couldn't be reached." } }));
@@ -72,6 +75,14 @@ export function Home({ boards, courses }: { boards: BoardSummary[]; courses: Cou
       setProblem(String(result.data?.message ?? "That didn't work."));
       return;
     }
+
+    /* A board chalk didn't write says so, rather than passing itself off. */
+    if (result.data.drawn === false && result.data.message)
+      try {
+        sessionStorage.setItem("chalk.board-note", String(result.data.message));
+      } catch {
+        /* private window */
+      }
 
     router.push(`/board/${result.data.board.id}`);
   };

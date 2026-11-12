@@ -10,7 +10,14 @@ an iframe beside it, and the settings panes that live in the shell itself.
 npm install
 npm run dev     # http://localhost:3000/control
 npm run build
+npm run test       # the board model, camera, routing and board writing
 npm run typecheck
+```
+
+To have chalk write boards itself rather than hand back a stand-in, set a key:
+
+```
+export ANTHROPIC_API_KEY=sk-ant-...
 ```
 
 ## What's here
@@ -23,6 +30,7 @@ npm run typecheck
 | [components/control/primitives.tsx](components/control/primitives.tsx) | Section / Card / Row / Field / Switch / Seg / Tag / Btn |
 | [components/board/](components/board/) | The board: surface, camera, connectors, cursor, walkthrough, pen |
 | [lib/board/](lib/board/) | The board's event model, camera maths, stroke outlining, edge routing |
+| [lib/server/write-board.ts](lib/server/write-board.ts) | Asking Claude for a board; [written.ts](lib/board/written.ts) turns the answer into events |
 | [components/art/](components/art/) | The hand-drawn icon system: 50 doodles, tiles, hero arcs, the logo, the face |
 | [components/howto/gallery.tsx](components/howto/gallery.tsx) | The how-to films: silent picture plus a separate audio track |
 | [lib/](lib/) | Plans and credits, the profile, settings storage, mishearings, personalities |
@@ -72,6 +80,23 @@ one and drawing on one are all the same operation: append, and project again.
   perfect-freehand with a seeded wobble, so it tapers like a real stroke and
   wobbles the same way on every render.
 
+### Writing a board
+
+[lib/server/write-board.ts](lib/server/write-board.ts) asks Claude Opus 5.5 for a board as
+**structured output**, so what comes back is already close to the board's event shape rather
+than prose to parse. Notes on the call:
+
+- The shape asked for is **flatter than the events** — a list of sections, each holding
+  blocks. The events are a union, and asking a model to choose a variant per item invites
+  near-misses; [lib/board/written.ts](lib/board/written.ts) does the conversion and owns the
+  ordering rules (narrate before draw, connections only between blocks that exist).
+- **Refusal fallbacks are on** (`fallbacks: "default"`): a declined request re-runs on another
+  model inside the same call instead of just stopping.
+- `max_tokens` is checked as well as `refusal` — a board truncated mid-section would render
+  as a half-finished thought, so it is reported rather than saved.
+- The **profile travels with the ask**, because it lives on the client (the Mac app's store,
+  or this browser). It only steers how the board is written, so a missing one costs nothing.
+
 ### Settings storage
 
 A setting lives in `localStorage` on the web and in the Mac app's own store when there is
@@ -105,9 +130,9 @@ Standing in, and marked as such where it shows:
   Boards, memory, reports, the setup wizard and plan previewing really work; billing,
   speech, transcription, profile import and MCP answer `501` rather than pretend. The store
   lives in memory, so it resets when the server does.
-- **Writing a board.** Asking for one is wired end to end — Home → `/api/boards` → the
-  board — but what comes back is [a sample board](lib/server/sample-board.ts) about the
-  topic rather than one chalk thought about. It is the one seam left in the core loop.
+- **Writing a board without a key.** With `ANTHROPIC_API_KEY` set, Home → `/api/boards` →
+  Claude → a real board. Without one, the route hands back [a stand-in](lib/server/sample-board.ts)
+  and the board says so on itself, rather than passing it off.
 - **The other framed areas** (`/recordings`, `/learn/pages`, `/learn/materials`, `/teach`,
   `/agents`) are still placeholder pages. They have to answer with something, or the rail
   frames a broken page instead of an obvious gap.

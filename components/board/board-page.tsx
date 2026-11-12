@@ -8,7 +8,7 @@
  * the moment it is drawn, and the save is a side effect.
  */
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import type { BoardEvent } from "@/lib/board/events";
 
@@ -16,6 +16,21 @@ import { BoardView } from "./board-view";
 
 export function BoardPage({ id, events: initial }: { id: string; events: BoardEvent[] }) {
   const [events, setEvents] = useState(initial);
+  const [note, setNote] = useState<string | null>(null);
+
+  /* A board chalk could not write itself says so, once, rather than passing a
+   * stand-in off as the real thing. */
+  useEffect(() => {
+    try {
+      const left = sessionStorage.getItem("chalk.board-note");
+      if (left) {
+        setNote(left);
+        sessionStorage.removeItem("chalk.board-note");
+      }
+    } catch {
+      /* private window */
+    }
+  }, []);
 
   const append = useCallback(
     (event: BoardEvent) => {
@@ -33,15 +48,26 @@ export function BoardPage({ id, events: initial }: { id: string; events: BoardEv
   );
 
   return (
-    <BoardView
-      events={events}
-      onAnnotate={append}
-      onAsk={({ blocks }) => {
-        /* Circling something is a question about it. Until asking is wired up,
-         * hand it to the board's own search rather than swallow it. */
-        if (!blocks.length) return;
-        window.dispatchEvent(new CustomEvent("chalk:asked", { detail: { board: id, blocks } }));
-      }}
-    />
+    <>
+      <BoardView
+        events={events}
+        onAnnotate={append}
+        onAsk={({ blocks }) => {
+          /* Circling something is a question about it. Until asking is wired up,
+           * hand it to the board's own search rather than swallow it. */
+          if (!blocks.length) return;
+          window.dispatchEvent(new CustomEvent("chalk:asked", { detail: { board: id, blocks } }));
+        }}
+      />
+
+      {note ? (
+        <div className="ck-note-bar" role="status">
+          <span>{note}</span>
+          <button type="button" onClick={() => setNote(null)} aria-label="Dismiss">
+            ✕
+          </button>
+        </div>
+      ) : null}
+    </>
   );
 }
