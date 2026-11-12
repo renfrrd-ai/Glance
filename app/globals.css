@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+/*
+ * Tailwind v4 theme. Recovered from the compiled `@layer theme` block of the
+ * production build: the fonts are wired through next/font in app/layout.tsx and
+ * exposed here so `font-sans` / `font-caveat` resolve to them.
+ */
+@theme {
+  --default-font-family: var(--font-saans);
+  --default-mono-font-family: var(--font-geist-mono);
+  --font-caveat: var(--font-caveat);
+  --font-montreal: var(--font-pp-neue-montreal);
+  --font-instrument: var(--font-instrument-sans);
+
+  /* Brand palette — components/art/palette.ts is the source of truth. */
+  --color-chalk-green: #148f48;
+  --color-chalk-sky: #b6dfe6;
+  --color-chalk-marigold: #f8a81b;
+  --color-chalk-vermilion: #e4492a;
+  --color-chalk-teal: #46b4a6;
+  --color-chalk-peri: #8a8bcb;
+  --color-chalk-navy: #22344e;
+  --color-chalk-pink: #e86fa0;
+  --color-chalk-charcoal: #2e2e33;
+  --color-chalk-cream: #f6f0e2;
+  --color-chalk-ink: #1e2b40;
+}
+
+html {
+  color-scheme: dark;
+}
