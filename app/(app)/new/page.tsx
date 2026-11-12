@@ -1,5 +1,9 @@
-import { Placeholder } from "@/components/app/placeholder";
+import { NewBoard } from "@/components/app/new-board";
 
-export default function Page() {
-  return <Placeholder title={'New board'} lede={'Ask for anything, and chalk draws you a board.'} />;
+import "@/styles/paper.css";
+
+export const metadata = { title: "New board" };
+
+export default function New() {
+  return <NewBoard />;
 }

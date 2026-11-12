@@ -1,0 +1,259 @@
+/*
+ * The light side of the app: the pages the control center frames.
+ *
+ * Same ink and paper as the board, so moving from a list into a board does not
+ * feel like moving between two products.
+ */
+
+.pa {
+  --ink-1: #1e2b40;
+  --ink-2: #3c4149;
+  --ink-3: #636b7f;
+  --paper: #f1ebdd;
+  --plate: #fff;
+  --line: #1e2b401f;
+  --mark: #29a383;
+
+  box-sizing: border-box;
+  min-height: 100dvh;
+  padding: 40px 24px 80px;
+  background: var(--paper);
+  color: var(--ink-1);
+  font-family: var(--font-saans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.pa * {
+  box-sizing: border-box;
+}
+
+.pa-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  max-width: 880px;
+  margin: 0 auto 28px;
+}
+
+.pa-head-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.pa-head h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  text-wrap: balance;
+}
+
+.pa-head p {
+  margin: 6px 0 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink-3);
+  text-wrap: pretty;
+}
+
+.pa-head-actions {
+  display: flex;
+  gap: 8px;
+  flex: none;
+  padding-top: 4px;
+}
+
+.pa-card {
+  max-width: 880px;
+  margin: 0 auto 18px;
+  background: var(--plate);
+  border-radius: 16px;
+  box-shadow: 0 1px 2px #1e2b4014, 0 6px 18px #1e2b400f;
+  overflow: hidden;
+}
+
+.pa-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 60px;
+  padding: 12px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+}
+
+.pa-row:last-child {
+  border-bottom: 0;
+}
+
+a.pa-row,
+button.pa-row {
+  cursor: pointer;
+  transition: background 0.12s ease-out;
+}
+
+a.pa-row:hover,
+button.pa-row:hover {
+  background: #1e2b4008;
+}
+
+a.pa-row:focus-visible,
+button.pa-row:focus-visible {
+  outline: 2px solid var(--mark);
+  outline-offset: -2px;
+}
+
+.pa-row-text {
+  display: grid;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.pa-row-title {
+  font-size: 15px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pa-row-help {
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+.pa-row-side {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+.pa-empty {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 40px 0;
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 15px;
+}
+
+.pa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 15px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--plate);
+  color: var(--ink-1);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 0.12s ease-out,
+    border-color 0.12s ease-out;
+}
+
+.pa-btn:hover {
+  background: #fff;
+  border-color: #1e2b4033;
+}
+
+.pa-btn[data-variant="primary"] {
+  background: #e4492a;
+  border-color: #e4492a;
+  color: #fff;
+}
+
+.pa-btn[data-variant="primary"]:hover {
+  background: #ee5b3c;
+}
+
+.pa-btn[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* the ask box on /new */
+.pa-ask {
+  max-width: 880px;
+  margin: 0 auto 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.pa-ask textarea {
+  width: 100%;
+  min-height: 112px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--plate);
+  color: var(--ink-1);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.pa-ask textarea:focus-visible {
+  outline: 2px solid var(--mark);
+  outline-offset: 1px;
+}
+
+.pa-ask-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pa-ask-note {
+  flex: 1;
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+.pa-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 880px;
+  margin: 0 auto 18px;
+}
+
+.pa-chip {
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--plate);
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.pa-chip:hover {
+  border-color: #1e2b4033;
+}
+
+@media (max-width: 700px) {
+  .pa {
+    padding: 24px 14px 72px;
+  }
+
+  .pa-head h1 {
+    font-size: 24px;
+  }
+}
